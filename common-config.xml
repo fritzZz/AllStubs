@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="common-config">
+	<description>
+		Author 		: Alessandro Franzi
+		Date		: 21/05/2011
+		Description	: Task definition
+	</description>
+	
+	<!-- Internal Variables-->
+	<dirname file="${ant.file.common-config}" property="common-config.basedir"/>
+	<property name="lib" value="${common-config.basedir}/lib"></property>
+
+	<taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+		<classpath>
+			<fileset dir="${lib}"></fileset>
+			
+		</classpath>
+	</taskdef>
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+		    <pathelement location="${lib}/ant-contrib-1.0b2.jar"/>
+	      </classpath>
+	</taskdef>
+
+	<target name="createSingleStub">
+		<property name="WSDL.uri.path" value="${inWSDL}"/>
+		<property name="completeTempPath" value="${folder}/${jarName}_${suffix}"/>
+		<echo message="Loading wsdl : ${inWSDL} temp path : ${completeTempPath}" />
+		<mkdir dir="${completeTempPath}"/>
+			
+		<wsimport  	verbose ="true" 
+				sourcedestdir="${completeTempPath}"
+				destdir = "${destFolder}"
+			 	keep="true"		
+				debug="${jaxws.debug}"		
+				extension="${jaxws.verbose}"
+		     	   	wsdl="${WSDL.uri.path}" >
+		</wsimport>
+			
+		<echo message="Stub created into ${folder}" />
+		<jar destfile="${folder}/${stubs}/${jarName}.jar" basedir="${completeTempPath}" />
+		
+	</target>
+
+</project>

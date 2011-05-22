@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="buildStub" basedir="." default="createAll">
+	<description>
+		Author 		: Alessandro Franzi
+		Date		: 21/05/2011
+		Description	: Creates Single stub or all project stubs
+	</description>
+	
+	<!-- Import the common targets --> 
+	<import file="common-config.xml"/> 
+
+	<!-- Internal Variables-->
+	<property name="MainProject.basedir" location="."/>
+	<property name="configurationFile" value="AllStubs.conf" />
+	
+	<!-- Import configuration file as property file and filter file-->
+	<filter filtersfile="${configurationFile}"/>
+	<property file="${configurationFile}" />
+	<!-- Definisco un filtro per il nome del progetto recuperandolo dalla variabile passata come argomento 1 allo script ant-->	
+	<filter token="projectName" value="${projectName}" />
+	<property name="pathProject" value="${projectDir}/${projectName}" />
+	
+	<target name="checkIfProjectAlreadyExists" >
+		<if>
+			<available file="${pathProject}" type="dir"/>
+			<then>
+				<echo message="Creating project ${projectName}" />
+			</then>
+			<else>
+				
+				<fail message="AllStubs - the project ${projectName} does not exists into the folder ${pathProject}"/>
+			</else>
+		</if>
+	</target>
+
+	<target name="createAll" description="Create all projects stub" >
+		<!-- recupero l'elenco degli stub da generare -->
+		<loadfile property="file-content" srcFile="${MainProject.basedir}/${projectsListFile}"/>
+
+		<foreach
+		    target="create"
+		    list="${file-content}"
+		    delimiter="${line.separator}"
+		    param="projectName"
+			trim="true"/>
+		
+			
+	</target>
+
+	<target name="create" description="Create Single Stub">
+
+		<antcall target="checkParameter">
+		</antcall>
+
+		<antcall target="checkIfProjectAlreadyExists">
+		</antcall>
+
+		<echo message="Generating stubs for project ${projectName}" />
+
+		<ant antfile="${projectDir}/${projectName}/projectBuild.xml" target="createThisStub" >
+		</ant>
+
+	</target>
+
+	<target name="checkParameter" >
+		<if> 
+			<equals arg1="${projectName}" arg2="$${projectName}" /> 
+		<then> 
+			<fail message="AllStubs - Usage: ant -f buildStub.xml -DprojectName=[yourProjectName]"/>
+		</then> 
+		</if>
+	</target>
+	
+</project>

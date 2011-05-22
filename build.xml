@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="AllStubs" basedir="." default="create">
+	<description>
+		Author 		: Alessandro Franzi
+		Date		: 21/05/2011
+		Description	: Generate Stubs
+	</description>
+	
+	<!-- Internal Variables-->
+	<property name="MainProject.basedir" location="."/>
+	
+	<property name="stubs" value="stubs"/>
+	<property name="build" value="build"/>
+	<property name="source" location="source"/>
+	<property name="generated-source" value="gen-src"/>
+	
+	<!-- Import the common targets --> 
+	<import file="common-config.xml"/>
+	<property file="AllStubs.conf" />
+
+	<property name="dist" value="${MainProject.basedir}/${stubJarFolder}"/>
+	 
+	 
+	
+	<target name="init" description="Create the directories tree for this project">
+		<delete dir="${MainProject.basedir}/${projectDir}/${projectName}/${build}" />
+		<mkdir dir="${MainProject.basedir}/${projectDir}/${projectName}/${build}"/>
+		
+		<mkdir dir="${dist}"/>
+		
+		<delete dir="${MainProject.basedir}/${projectDir}/${projectName}/${generated-source}" />
+		<mkdir dir="${MainProject.basedir}/${projectDir}/${projectName}/${generated-source}"/>
+		<mkdir dir="${MainProject.basedir}/${projectDir}/${projectName}/${generated-source}/${stubs}"/>
+		
+	</target>
+	
+	<!-- A MUST target -->
+	<target name="compile" depends="create"
+		description="Compile the source">
+		<path id="buildClasspath" description="Classpath di sistema" refid="buildClasspathRef" />
+		<!--		
+		<antcall target="common-config.compile">
+			<param name="source" value="${source}"/>
+			<param name="libFolder"  value="${lib}"/>
+			<param name="classes" value="${MainProject.basedir}/${projectDir}/${projectName}/${build}"/>
+			<param name="executableJVM" value="${javaPath}" />
+		</antcall> -->
+	</target>
+	
+	<target name="create" depends="init" description="Create stubs">
+			<echo message="Create ${ant.project.name} stubs" />
+		
+			<!-- carico i filtri -->
+		
+			<!-- recupero l'elenco degli stub da generare -->
+			<loadfile property="file-content" srcFile="${MainProject.basedir}/${projectDir}/${projectName}/${endpointListFile}"/>
+
+			<foreach
+			    target="generateSingleStub"
+			    list="${file-content}"
+			    delimiter="${line.separator}"
+			    param="fileLine"
+				trim="true"/>
+		
+	</target>
+	
+	<target name="generateSingleStub">
+		<propertyregex property="jar.name"
+              input="${fileLine}"
+              regexp="(.*)=(.*)"
+              select="\1"
+              casesensitive="false"/>
+		
+		<propertyregex property="jar.wsdl"
+		              input="${fileLine}"
+		              regexp="(.*)=(.*)"
+		              select="\2"
+		              casesensitive="false" />
+		
+		<property name="endpoint" value="${jar.wsdl}" />
+
+		<echo message="Generating Jar : ${jar.name} - WSDL : ${endpoint}" />
+		
+		<tstamp>
+			<format property="actual-time" pattern="yyyyMMddHHmm"/>
+		</tstamp>
+		
+		<antcall target="common-config.createSingleStub">
+			<param name="inWSDL" value="${endpoint}"/>
+			<param name="folder" value="${MainProject.basedir}/${projectDir}/${projectName}/${generated-source}"/>
+			<param name="destFolder" value="${MainProject.basedir}/${projectDir}/${projectName}/${build}"/>
+			<param name="jarName" value="${jar.name}"/>
+			<param name="suffix" value="${actual-time}" />
+			<param name="jaxws.debug" value="${jaxws.debug}" />
+			<param name="jaxws.verbose" value="${jaxws.verbose}" />
+		</antcall>
+		
+		<mkdir dir="${dist}/${projectName}/${jar.name}/"/>
+		<copy todir="${dist}/${projectName}/${jar.name}/">
+			<fileset file="${MainProject.basedir}/${projectDir}/${projectName}/${generated-source}/${stubs}/${jar.name}.jar">
+			</fileset>
+		</copy>
+		
+	</target>
+	
+</project>

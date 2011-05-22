@@ -1,0 +1,52 @@
+####################################################################################################################
+# PROJECT 	: AllStubs                                                                                         #
+# AUTHOR	: Alessandro Franzi                                                                                #
+# CONTACT	: franziale@gmail.com										   #
+# DESCRIPTION 	: The main feature is to create stubs in java from a WSDL definition using JAX-WS library.         #
+		  It is possible to create many project and generate each stub singolary or by only one command    #
+# DATE		: 22/05/2011                                                                                       #
+# VERSION	: 1.0                                                                                              #
+####################################################################################################################
+
+############################
+# CREARE UN NUOVO PROGETTO #
+############################
+
+Per creare un nuovo progetto
+
+Tramite file ant : 
+
+ant -f createProject.xml -DprojectName=myFooProject
+
+Tramite sh : 
+
+sh createProject.sh myFooProject
+
+
+#######################################
+# CREARE GLI STUB DI TUTTI I PROGETTI #
+#######################################
+
+Per creare gli stubs di tutti i progetti
+
+Tramite file ant : 
+
+ant -f buildStub.xml
+
+Tramite sh : 
+
+sh buildStub.sh
+
+##########################################
+# CREARE GLI STUB DI UN SINGOLO PROGETTO #
+##########################################
+
+Per creare gli stubs di un singolo progetto
+
+Tramite file ant : 
+
+ant -f buildStub.xml create -DprojectName=[prjname]
+
+Tramite sh : 
+
+sh buildStub.sh myFooProject
